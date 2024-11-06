@@ -79,6 +79,8 @@ class CLIPFeatureLoss(nn.Module):
     def __call__(self, feature: Tensor, y: Any = None) -> Tensor:
         index = self.count_to_index(self.count)
         gt = self.ground_truth[index]
+        # 这里会RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cuda:6!，所以要转换到同一个device
+        gt = gt.to(feature.device)
         loss = -torch.nn.functional.cosine_similarity(feature, gt).mean()
         if self.victim_text:
             vt = self.victim_text[index]
