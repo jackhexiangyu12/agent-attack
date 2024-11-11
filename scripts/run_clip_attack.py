@@ -170,7 +170,7 @@ def run(args: argparse.Namespace, dataset) -> None:
         all_images = []
         all_captions = []
         for size in [180]:
-            attack_out_dict = attack_fn(victim_image, target_caption_clip, victim_caption_clip, iters=1000, size=size)
+            attack_out_dict = attack_fn(victim_image, target_caption_clip, victim_caption_clip, iters=30, size=size)
             adv_images = attack_out_dict["adv_images"]
 
             # Evaluate with GPT-4V
@@ -189,7 +189,7 @@ def run(args: argparse.Namespace, dataset) -> None:
                     except Exception as e:
                         print(e)
                         # Sleep a random time between 30-90 seconds
-                        time.sleep(30 + 60 * random.random())
+                        # time.sleep(30 + 60 * random.random())
                 print(f"Generated caption ({example['id']}, step {step}, size {size}): {gen_text}")
                 all_captions.append(gen_text)
 

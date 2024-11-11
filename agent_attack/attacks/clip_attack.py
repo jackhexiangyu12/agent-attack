@@ -565,11 +565,12 @@ if __name__ == "__main__":
 
     set_seed(42)
 
-    image = Image.open("attack/attacks/test.jpeg").convert("RGB")
+    # image = Image.open("attack/attacks/test.jpeg").convert("RGB")
+    image = Image.open("reddit_35_upvote_cap/victim_image.png").convert("RGB")
     target_text = "an amnie of a dog"
     victim_text = "an amnie of a boy"
 
     attack_out_dict = clip_attack(image, target_text, victim_text, iters=500, size=224)
     adv_image = attack_out_dict["adv_image"]
-    save_name = f"attack/attacks/clip_attack_image.png"
+    save_name = f"reddit_35_upvote_cap/clip_attack_image.png"
     adv_image.save(save_name)
