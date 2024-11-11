@@ -84,6 +84,8 @@ class CLIPFeatureLoss(nn.Module):
         loss = -torch.nn.functional.cosine_similarity(feature, gt).mean()
         if self.victim_text:
             vt = self.victim_text[index]
+            # feature与vt不在同一个device上，所以要转换到同一个device
+            vt = vt.to(feature.device)
             loss = loss + torch.nn.functional.cosine_similarity(feature, vt).mean()
         self.count = self.count + 1
         # print(loss)
