@@ -454,7 +454,8 @@ class SSA_CommonWeakness(AdversarialInputAttacker):
             x = self.end_attack(x)
             x = clamp(x, original_x - self.epsilon, original_x + self.epsilon)
 
-            if (_ + 1) % 100 == 0:
+            # if (_ + 1) % 100 == 0:
+            if (_ + 1) % 2 == 0:
                 all_xs[_] = x.clone().detach()
         return all_xs
 

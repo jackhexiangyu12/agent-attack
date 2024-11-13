@@ -13,6 +13,7 @@ from langchain.prompts import PromptTemplate
 from agent_attack.attacks import get_attack_fn
 from agent_attack.data.attack_data import get_examples
 from agent_attack.models import get_model
+import torchvision.transforms as transforms
 
 
 def config() -> argparse.Namespace:
@@ -170,7 +171,7 @@ def run(args: argparse.Namespace, dataset) -> None:
         all_images = []
         all_captions = []
         for size in [180]:
-            attack_out_dict = attack_fn(victim_image, target_caption_clip, victim_caption_clip, iters=30, size=size)
+            attack_out_dict = attack_fn(victim_image, target_caption_clip, victim_caption_clip, iters=10, size=size)
             adv_images = attack_out_dict["adv_images"]
 
             # Evaluate with GPT-4V
@@ -181,8 +182,15 @@ def run(args: argparse.Namespace, dataset) -> None:
 
                 while True:
                     try:
+                        # gen_text = model.generate_answer(
+                        #     [adv_image],
+                        #     [prompt_fn()],
+                        # )[0]
+
+                        transf = transforms.ToTensor()
+                        img_tensor = transf(adv_image)
                         gen_text = model.generate_answer(
-                            [adv_image],
+                            img_tensor,
                             [prompt_fn()],
                         )[0]
                         break

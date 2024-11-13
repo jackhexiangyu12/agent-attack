@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     save_name = f"attack/attacks/{model_path.split('/')[1]}_bim_image.png"
     if True:
-        image = Image.open("attack/attacks/test.jpeg").convert("RGB")
+        image = Image.open("/media/ssd4/hxy/agent-attack/exp_data/agent_adv/classifieds_6_choose_me_cap/bim_caption_attack_image.png").convert("RGB")
         attack_out_dict = bim(model, image, inputs, outputs)
         adv_image = attack_out_dict["adv_image"]
         adv_image.save(save_name)

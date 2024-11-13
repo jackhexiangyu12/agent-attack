@@ -288,7 +288,11 @@ class LLaVa(VLM):
             for idx, input_ids in enumerate(batch_input_ids):
                 # print("input_ids", input_ids)
                 # print("len(input_ids)", len(input_ids))
+                # 不在同一个but found at least two devices, 0 and 1，所以需要移动到同一个设备上
+                # pixel_values[idx] = pixel_values[idx].to(input_ids.device)
+                # print("pixel_values[idx].device", pixel_values[idx].device)
                 if return_string_probabilities is None:
+                    # generate found at least two devices,需要调整参数
                     full_out_ids = self.model.generate(
                         input_ids[None, ...],
                         images=pixel_values[idx][None, ...],
