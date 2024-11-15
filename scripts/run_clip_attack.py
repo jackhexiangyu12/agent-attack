@@ -1,10 +1,3 @@
-import os
-os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
-os.environ["HF_DATASETS_CACHE"] = "/data/cache/"
-os.environ["HF_HOME"] = "/data/cache/"
-os.environ["HUGGINGFACE_HUB_CACHE"] = "/data/cache/"
-os.environ["TRANSFORMERS_CACHE"] = "/data/cache/"
-
 import argparse
 import os
 import random
@@ -18,9 +11,17 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 
 from agent_attack.attacks import get_attack_fn
+from agent_attack.attacks.utils import evaluate_from_pil
 from agent_attack.data.attack_data import get_examples
 from agent_attack.models import get_model
-import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+import torch
+from PIL import Image
+from torch.nn import functional as F
+from torchvision.transforms import Compose
+from tqdm import tqdm
 
 
 def config() -> argparse.Namespace:
@@ -187,24 +188,28 @@ def run(args: argparse.Namespace, dataset) -> None:
             for step, adv_image in adv_images.items():
                 all_images.append(adv_image)
 
+
                 while True:
                     try:
+                        inputs = [prompt_fn()]
+                        if isinstance(model.image_processor, Compose) or hasattr(model.image_processor, "is_prismatic"):
+                            # This is a standard `torchvision.transforms` object or custom PrismaticVLM wrapper
+                            adv_pixel_values = model.image_processor(adv_image).unsqueeze(0)
+                        else:
+                            # Assume `image_transform` is an HF ImageProcessor...
+                            adv_pixel_values = model.image_processor(adv_image, return_tensors="pt")["pixel_values"]
+                        adv_pixel_values = adv_pixel_values.to(model.distributed_state.device)
+
+                        gen_text = model.generate_answer(adv_pixel_values, inputs)
                         # gen_text = model.generate_answer(
                         #     [adv_image],
                         #     [prompt_fn()],
                         # )[0]
-
-                        transf = transforms.ToTensor()
-                        img_tensor = transf(adv_image)
-                        gen_text = model.generate_answer(
-                            img_tensor,
-                            [prompt_fn()],
-                        )[0]
                         break
                     except Exception as e:
                         print(e)
                         # Sleep a random time between 30-90 seconds
-                        # time.sleep(30 + 60 * random.random())
+                        time.sleep(30 + 60 * random.random())
                 print(f"Generated caption ({example['id']}, step {step}, size {size}): {gen_text}")
                 all_captions.append(gen_text)
 

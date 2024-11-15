@@ -148,7 +148,8 @@ class LLaVa(VLM):
         else:
             q_prompt = DEFAULT_IMAGE_TOKEN + "\n"
         if self.model_id.startswith("llava-v1.5") or self.model_id.startswith("llava-v1.6"):
-            q_prompt += "\nProvide a short image description."
+            # q_prompt += "\nProvide a short image description."
+            q_prompt += "\nProvide a description."
 
         # Derive the full `vqa_prompt` following the logic from LLaVa/LLaMa (insert <SYS> and <INST> role tags)
         self.conv.append_message(self.conv.roles[0], q_prompt)
