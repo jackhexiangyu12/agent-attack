@@ -1,4 +1,11 @@
 import os
+os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+os.environ["HF_DATASETS_CACHE"] = "/data/cache/"
+os.environ["HF_HOME"] = "/data/cache/"
+os.environ["HUGGINGFACE_HUB_CACHE"] = "/data/cache/"
+os.environ["TRANSFORMERS_CACHE"] = "/data/cache/"
+
+import os
 from abc import abstractmethod
 from math import ceil
 from typing import Callable, List

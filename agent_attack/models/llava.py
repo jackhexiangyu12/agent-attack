@@ -293,13 +293,23 @@ class LLaVa(VLM):
                 # print("pixel_values[idx].device", pixel_values[idx].device)
                 if return_string_probabilities is None:
                     # generate found at least two devices,需要调整参数
-                    full_out_ids = self.model.generate(
-                        input_ids[None, ...],
-                        images=pixel_values[idx][None, ...],
-                        image_sizes=image_sizes,
-                        use_cache=True,
-                        **generate_kwargs,
-                    )
+                    # full_out_ids = self.model.generate(
+                    #     input_ids[None, ...],
+                    #     images=pixel_values[idx][None, ...],
+                    #     image_sizes=image_sizes,
+                    #     use_cache=True,
+                    #     **generate_kwargs,
+                    # )
+                    with torch.inference_mode():
+                        full_out_ids = self.model.generate(
+                            input_ids[None, ...],
+                            images=pixel_values[idx][None, ...],
+                            image_sizes=[image_sizes],
+                            # do_sample=True if args.temperature > 0 else False,
+                            # temperature=args.temperature,
+                            # max_new_tokens=args.max_new_tokens,
+                            # streamer=streamer,
+                            use_cache=True)
                     # print("full_out_ids", full_out_ids)
                     gen_ids = full_out_ids[0, offset:]
 
